@@ -235,6 +235,7 @@ static void floppy_mount(struct slot *slot)
     dma_rd = _dma_rd;
     dma_wr = _dma_wr;
 
+    cmpxchg(&drv->step.state, STEP_settling, 0);
     drv->index_suppressed = FALSE;
     index.prev_time = time_now();
 }

@@ -555,17 +555,11 @@ static void drive_step_timer(void *_drv)
         if ((drv->cyl >= 84) && !drv->step.inward)
             drv->cyl = 84; /* Fast step back from D-A cyls */
         drv->cyl += drv->step.inward ? 1 : -1;
-        timer_set(&drv->step.timer,
-                  drv->step.start + time_ms(ff_cfg.head_settle_ms));
         if (drv->cyl == 0)
             drive_change_output(drv, outp_trk0, TRUE);
         /* New state last, as that lets hi-pri IRQ start another step. */
         barrier();
         drv->step.state = STEP_settling;
-        break;
-    case STEP_settling:
-        /* Can race transition to STEP_started. */
-        cmpxchg(&drv->step.state, STEP_settling, 0);
         break;
     }
 }
